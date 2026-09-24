@@ -1,0 +1,22 @@
+version: 2
+
+sources:  
+  - name: datahub_msx
+    description: 'source for all MSX Clarity tables owned by DTP'
+    database: datahub_dev_bronze
+    schema: datahub_msx
+    tables:
+      - name: msx_ip_output
+        description: 'raw table containing IP encounters for entire system'
+      - name: msx_provider_v
+        description: 'table of all providers, their credential IDs and their service areas'
+
+  - name: capacity_modeling
+    description: 'source for all OAO owned capacity modeling tables'
+    database: opsanalytics_adb_workspace01
+    schema: capacity_modeling
+    tables: 
+      - name: oe_charge_detail
+        description: 'system wide charge detail table containing bed charges'
+      - name: service_groups
+        description: 'historic tracking of all ip units and their unit types by date'

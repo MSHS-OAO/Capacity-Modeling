@@ -282,3 +282,8 @@ models:
         description: Summed bed-charge quantity capped at one for the grouping grain.
         data_tests:
           - not_null
+
+      - name: CREATED_DATETIME
+        description: Timestamp when the gold model was created or refreshed by dbt.
+        data_tests:
+          - not_null

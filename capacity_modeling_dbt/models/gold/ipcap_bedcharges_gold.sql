@@ -46,7 +46,8 @@ final as (
         case
             when BED_CHARGES > 1 then 1
             else BED_CHARGES
-        end as BED_CHARGES
+        end as BED_CHARGES,
+        current_timestamp() as CREATED_DATETIME
     from aggregated
 )
 

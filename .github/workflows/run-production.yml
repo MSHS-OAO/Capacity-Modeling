@@ -43,4 +43,4 @@ jobs:
               }
             }')
 
-          databricks jobs run-now --json "$REQUEST"
+          databricks jobs run-now --json "$REQUEST" --timeout 1h

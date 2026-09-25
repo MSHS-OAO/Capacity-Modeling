@@ -1,0 +1,289 @@
+version: 2
+
+models:
+  - name: ipcap_bedcharges_bronze
+    description: >
+      Inpatient encounter data enriched with charge detail, ip unit service-group
+      history, and principal-surgeon organizational attributes. The expected grain is
+      one row per inpatient encounter and matching charge-detail row. Encounters with
+      no matching charge detail are retained because the model uses left joins.
+    columns:
+      - name: ENCOUNTER_NO
+        description: Source-system inpatient encounter or hospital account identifier.
+        data_tests:
+          - not_null
+
+      - name: EPIC_CSN
+        description: Epic contact serial number associated with the encounter.
+
+      - name: MSMRN
+        description: Patient medical record number from the MSX source.
+
+      - name: FACILITY_MSX
+        description: Facility associated with the inpatient encounter in MSX.
+
+      - name: DSCH_DT_SRC
+        description: Discharge date from the source encounter record.
+
+      - name: DSCH_TIME_SRC
+        description: Discharge time from the source encounter record.
+
+      - name: ADMIT_DT_SRC
+        description: Admission date from the source encounter record.
+
+      - name: ADMIT_TIME_SRC
+        description: Admission time from the source encounter record.
+
+      - name: LOS_NO_SRC
+        description: Source length-of-stay value for the encounter.
+
+      - name: ENC_ZIP_SRC
+        description: ZIP code recorded for the encounter.
+
+      - name: ADMIT_UNIT_CD_SRC
+        description: Source code for the admitting unit.
+
+      - name: ADMIT_UNIT_DESC_MSX
+        description: MSX description of the admitting unit.
+
+      - name: DSCH_UNIT_CD_SRC
+        description: Source code for the discharge unit.
+
+      - name: DSCH_UNIT_DESC_MSX
+        description: MSX description of the discharge unit.
+
+      - name: ATTENDING_MD_CD_SRC
+        description: Source provider code for the attending physician.
+
+      - name: ATTENDING_MD_NAME_MSX
+        description: Name of the attending physician from MSX.
+
+      - name: ATTENDING_VERITY_DEPT_CD
+        description: Verity department code associated with the attending physician.
+
+      - name: ATTENDING_VERITY_DEPT_DESC
+        description: Verity department description associated with the attending physician.
+
+      - name: ATTENDING_VERITY_DIV_CD
+        description: Verity division code associated with the attending physician.
+
+      - name: ATTENDING_VERITY_DIV_DESC
+        description: Verity division description associated with the attending physician.
+
+      - name: ATTENDING_VERITY_REPORT_SERVICE
+        description: Verity reporting service associated with the attending physician.
+
+      - name: PRINCIPAL_SURGEON_CD_SRC
+        description: Source provider code for the principal surgeon.
+
+      - name: PRINCIPAL_SURGEON_NAME_MSX
+        description: Name of the principal surgeon from MSX.
+
+      - name: PRINCIPAL_SURGEON_VERITY_DEPT_DESC
+        description: Verity department description associated with the principal surgeon.
+
+      - name: PRINCIPAL_SURGEON_VERITY_DIV_DESC
+        description: Verity division description associated with the principal surgeon.
+
+      - name: MSDRG_CD_SRC
+        description: Medicare Severity Diagnosis Related Group code for the encounter.
+
+      - name: MSDRG_DESC_MSX
+        description: MSX description of the Medicare Severity Diagnosis Related Group.
+
+      - name: ADMIT_TYPE_CD_SRC
+        description: Source admission-type code.
+
+      - name: ADMIT_TYPE_DESC_SRC
+        description: Source admission-type description.
+
+      - name: VIZ_EX_LOS
+        description: Vizient expected length-of-stay value.
+
+      - name: SERVICE_DESC_MSX
+        description: MSX service description for the encounter.
+
+      - name: FACILITY_ABBR
+        description: Facility abbreviation from the matching charge-detail row.
+
+      - name: COST_CENTER_C
+        description: Cost-center code from the matching charge-detail row.
+
+      - name: CHARGE_C
+        description: Charge code from the matching charge-detail row.
+
+      - name: EPIC_DEPT_ID
+        description: Epic department identifier from the matching charge-detail row.
+
+      - name: EPIC_DEPT_NAME
+        description: Epic department name from the matching charge-detail row.
+
+      - name: QUANTITY
+        description: Quantity recorded on the matching charge-detail row.
+
+      - name: SERVICE_DATE
+        description: Service date from the matching charge-detail row, represented as yyyyMMdd.
+
+      - name: CPT_HCPCS_C
+        description: CPT or HCPCS procedure code from the matching charge-detail row.
+
+      - name: BILLING_CAT_C
+        description: Billing-category code from the matching charge-detail row.
+
+      - name: BILLING_CAT_DESC
+        description: Billing-category description from the matching charge-detail row.
+
+      - name: RPT_GRP_NINETEEN_C
+        description: Reporting group 19 code from the matching charge-detail row.
+
+      - name: RPT_GRP_NINETEEN_DESC
+        description: Reporting group 19 description from the matching charge-detail row.
+
+      - name: NEW_COST_CENTER_C
+        description: Standardized or remapped cost-center code.
+
+      - name: NEW_GL_COMPONENT
+        description: Standardized or remapped general-ledger component.
+
+      - name: EXTERNAL_NAME
+        description: External department name effective on the charge service date.
+
+      - name: SERVICE_GROUP
+        description: Service-group classification effective on the charge service date.
+
+      - name: LOC_NAME
+        description: Location name effective on the charge service date.
+
+  - name: ipcap_bedcharges_silver
+    description: >
+      Formatted inpatient bed-charge records whose admission and discharge dates both
+      fall within the inclusive start_date and end_date dbt variables supplied by the
+      Databricks job. Date fields are normalized to DATE and billing categories are
+      standardized before filtering to BED CHARGES.
+    columns:
+      - name: ENCOUNTER_NO
+        description: Source-system inpatient encounter or hospital account identifier.
+        data_tests:
+          - not_null
+
+      - name: EPIC_CSN
+        description: Epic contact serial number converted from its source decimal type to an integer string.
+
+      - name: ADMIT_DT_SRC
+        description: Admission date normalized to the Databricks DATE type.
+        data_tests:
+          - not_null
+
+      - name: DSCH_DT_SRC
+        description: Discharge date normalized to the Databricks DATE type.
+        data_tests:
+          - not_null
+
+      - name: SERVICE_DATE
+        description: Charge service date normalized to the Databricks DATE type.
+
+      - name: SERVICE_MONTH
+        description: First day of the month containing SERVICE_DATE.
+
+      - name: FACILITY_MSX
+        description: Standardized facility abbreviation used for reporting.
+
+      - name: SERVICE_GROUP
+        description: Service-group classification, with null values pooled as Other.
+        data_tests:
+          - not_null
+
+      - name: LOC_NAME
+        description: >
+          Standardized location abbreviation, using FACILITY_MSX when SERVICE_GROUP
+          is Other and the facility has a recognized reporting abbreviation.
+
+      - name: BILLING_CAT_DESC
+        description: Normalized billing-category description; always BED CHARGES in this model.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['BED CHARGES']
+
+  - name: ipcap_bedcharges_gold
+    description: >
+      Bed-charge utilization aggregated to encounter, service date, department,
+      service group, and reporting attributes. Null quantities contribute zero to
+      the aggregate, and summed bed charges greater than one are capped at one.
+      Records with a null EXTERNAL_NAME are retained.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - FACILITY_MSX
+              - ENCOUNTER_NO
+              - MSMRN
+              - DSCH_DT_SRC
+              - ADMIT_DT_SRC
+              - MSDRG_CD_SRC
+              - LOC_NAME
+              - ATTENDING_VERITY_REPORT_SERVICE
+              - DSCH_UNIT_DESC_MSX
+              - EXTERNAL_NAME
+              - SERVICE_GROUP
+              - SERVICE_MONTH
+              - SERVICE_DATE
+              - LOS_NO_SRC
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "BED_CHARGES <= 1"
+    columns:
+      - name: FACILITY_MSX
+        description: Standardized facility abbreviation.
+
+      - name: ENCOUNTER_NO
+        description: Source-system inpatient encounter or hospital account identifier.
+        data_tests:
+          - not_null
+
+      - name: MSMRN
+        description: Patient medical record number from the MSX source.
+
+      - name: DSCH_DT_SRC
+        description: Discharge date for the encounter.
+
+      - name: ADMIT_DT_SRC
+        description: Admission date for the encounter.
+
+      - name: MSDRG_CD_SRC
+        description: Medicare Severity Diagnosis Related Group code.
+
+      - name: LOC_NAME
+        description: Standardized reporting location abbreviation.
+
+      - name: ATTENDING_VERITY_REPORT_SERVICE
+        description: Verity reporting service associated with the attending physician.
+
+      - name: DSCH_UNIT_DESC_MSX
+        description: MSX description of the discharge unit.
+
+      - name: EXTERNAL_NAME
+        description: External department name effective on the service date.
+
+      - name: SERVICE_GROUP
+        description: Service-group classification, with missing values represented as Other.
+
+      - name: SERVICE_MONTH
+        description: First day of the month containing SERVICE_DATE.
+
+      - name: SERVICE_DATE
+        description: Date of the bed charge.
+
+      - name: LOS_NO_SRC
+        description: Source length-of-stay value for the encounter.
+
+      - name: BED_CHARGES
+        description: Summed bed-charge quantity capped at one for the grouping grain.
+        data_tests:
+          - not_null
+
+      - name: CREATED_DATETIME
+        description: Timestamp when the gold model was created or refreshed by dbt.
+        data_tests:
+          - not_null

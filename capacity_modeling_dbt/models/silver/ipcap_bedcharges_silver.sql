@@ -105,8 +105,8 @@ final as (
     select enriched.*
     from enriched
     cross join parameters
-    where enriched.ADMIT_DT_SRC between parameters.start_date and parameters.end_date
-      and enriched.DSCH_DT_SRC between parameters.start_date and parameters.end_date
+    where (enriched.ADMIT_DT_SRC between parameters.start_date and parameters.end_date
+      or enriched.DSCH_DT_SRC between parameters.start_date and parameters.end_date)
       and enriched.BILLING_CAT_DESC = 'BED CHARGES'
 )
 

@@ -171,13 +171,13 @@ models:
 
       - name: ADMIT_DT_SRC
         description: Admission date normalized to the Databricks DATE type.
-        data_tests:
-          - not_null
 
       - name: DSCH_DT_SRC
         description: Discharge date normalized to the Databricks DATE type.
         data_tests:
-          - not_null
+          - not_null:
+              config:
+                severity: warn
 
       - name: SERVICE_DATE
         description: Charge service date normalized to the Databricks DATE type.

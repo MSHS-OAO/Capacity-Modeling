@@ -1,11 +1,11 @@
 with ip as (
     select *
-    from {{ source('datahub_msx', 'msx_ip_output') }}
+    from {{ source('datahub_ubs', 'msx_ip_output') }}
 ),
 
 charge as (
     select *
-    from {{ source('capacity_modeling', 'oe_charge_detail')}}
+    from {{ source('datahub_dashbd_user', 'oe_charge_detail')}}
 ),
 
 service_group as (
@@ -16,7 +16,7 @@ service_group as (
 
 principal_surgeon as (
        select *
-       from {{ source('datahub_msx', 'msx_provider_v')}}
+       from {{ source('datahub_ubs', 'msx_provider_v')}}
 ),
 
 final as (

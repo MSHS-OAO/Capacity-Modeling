@@ -83,6 +83,7 @@ formatted as (
             when 'MOUNT SINAI BETH ISRAEL' then 'MSBI'
             when 'MOUNT SINAI MORNINGSIDE' then 'MSM'
             when 'MOUNT SINAI WEST' then 'MSW'
+            when 'MOUNT SINAI SOUTH NASSAU' then 'MSSN'
             else LOC_NAME
         end as LOC_NAME
     from bronze
